@@ -3,25 +3,34 @@ import 'package:http/http.dart' as http;
 import 'data_model.dart';
 
 class DataFromRickMortyState {
-  static List<DataModel> model = [];
-
-  static Future<List<DataModel>?> getData() async {
+  static int page = 0;
+  static List<Results> model = [];
+  static Future<List<Results>> getData() async {
+    page++;
     print(1);
     print(model);
-    var url = Uri.parse('https://rickandmortyapi.com/api/character/1,3,2,5,6');
+    var url = Uri.parse('https://rickandmortyapi.com/api/character/?page=$page');
     var response = await http.get(url);
     var data = await jsonDecode(response.body);
-    model.clear();
-    for (var p in data) {
+    print(data['info']['next']);
+    print(data['results'][1]['name']);
+    for(var p in data['results']){
       print('a');
-      var dataModel = DataModel.fromJson(p);
-      if (!model.contains(dataModel)) {
-        model.add(dataModel);
-      }
+      var dataModel = Results.fromJson(p);
+      if (!model.contains(dataModel)){model.add(dataModel);}
     }
-    print(model.length);
-    for (var k in model) {
-      print(k.name);
+
+    return model;
+  }
+ static Future<List<Results>> updateGrid() async{
+    page++;
+    var url = Uri.parse('https://rickandmortyapi.com/api/character/?page = $page');
+    var response = await http.get(url);
+    var data = await jsonDecode(response.body);
+    for(var p in data['results']){
+      print('b');
+      var dataModel = Results.fromJson(p);
+      if (!model.contains(dataModel)){model.add(dataModel);}
     }
     return model;
   }
